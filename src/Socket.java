@@ -3,14 +3,10 @@ public class Socket {
 
 	public void teste(){
 		Socket socket = new Socket();
-		socket.connect();
 		
-		if(socket.connected()) {
+		while(true) {
 			socket.getInputStream();
-		}else {
-			socket.getOutputStream();
 		}
-		
 	}
 	
 	

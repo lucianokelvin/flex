@@ -30,6 +30,7 @@ import recoder.java.statement.Do;
 import recoder.java.statement.Else;
 import recoder.java.statement.For;
 import recoder.java.statement.If;
+import recoder.java.statement.LoopStatement;
 import recoder.java.statement.Switch;
 import recoder.java.statement.While;
 
@@ -156,15 +157,40 @@ public class Flex {
 							automatoIf.addTransition(new Transition(map.get(e.start()), e.label(), map.get(e.end())));
 						}
 						processed.add(elseBlock);
-					}else {
+					} else {
 						automatoIf.addTransition(
 								new Transition(getAInitial(automatoIf), freeTransition, getATerminal(automatoIf)));
 					}
-				} 
+				}
 				if (!isEmpty(automatoIf)) {
 					automato = concatenation.transform(automato, automatoIf);
 				}
 			}
+			if (pe instanceof While) {
+				
+				
+				ProgramElement p2 = tw.getProgramElement();
+				System.out.println("----------");
+				while (!(p2 instanceof StatementBlock)) {
+					tw.next();
+					p2 = tw.getProgramElement();
+				}			
+				
+				Automaton automatoWhile = generate(p2, objectView);
+				State last = getATerminal(automatoWhile);
+				State initial = getAInitial(automatoWhile);
+				last.setTerminal(false);
+				State newLast = automatoWhile.addState(false, true);
+				automatoWhile.addTransition(new Transition(last, freeTransition, newLast));
+				automatoWhile.addTransition(new Transition(initial, freeTransition, newLast));
+				System.out.println(automatoWhile);
+				
+				processed.add(p2);
+				if (!isEmpty(automatoWhile)) {
+					automato = concatenation.transform(automato, automatoWhile);
+				}
+			}
+
 		}
 		return automato;
 
